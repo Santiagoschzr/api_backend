@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-require('dotenv').config();
-
+require('dotenv').config()
 
 const cors = require('cors')
 const app = express();
@@ -25,7 +24,7 @@ const User = require ('./models/user.js')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.SECRETSKEY;
+const secretKey = process.env.SECRETS_JWT;
 
 
 app.get('/', (req,res) => {
