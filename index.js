@@ -1,11 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
+require('dotenv').config();
+
+
+const cors = require('cors')
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
-const mongoURI = "mongodb+srv://Santi:<as4ntILGfut.>@cluster0.ddts1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
+app.use(cors({
+    origin: "*"
+}));
+app.use(morgan("dev"))
+const mongoURI = process.env.MONGO_URI
 mongoose.connect(mongoURI).then(() => {
     console.log('Connected to MongoDB');
 }).catch(err =>{
@@ -17,7 +25,7 @@ const User = require ('./models/user.js')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'your-secret-key';
+const secretKey = process.env.SECRETSKEY;
 
 
 app.get('/', (req,res) => {
@@ -27,8 +35,11 @@ app.get('/', (req,res) => {
 //TODO: Login Route
 
 app.post('/login', async (req, res) =>{
+
+    const {username, password} = req.body;
+
     try{
-        const user = await User.findOne({username: username.toLowercase()});
+        const user = await User.findOne({username: username.toLowerCase()});
 
         if (user) {
             const passwordMatch = await bcrypt.compare(password, user.password);
@@ -63,7 +74,7 @@ app.post('/login', async (req, res) =>{
             })
         }
     }catch(e) {
-        console.error('Login error: ', error);
+        console.error('Login error: ', e);
         res.status(500).json({
             success: false,
             message: 'An error occured during login',
